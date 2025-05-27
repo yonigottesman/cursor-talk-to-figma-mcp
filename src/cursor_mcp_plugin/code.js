@@ -137,6 +137,8 @@ async function handleCommand(command, params) {
       return await resizeNode(params);
     case "delete_node":
       return await deleteNode(params);
+    case "hide_node":
+        return await hideNode(params);
     case "delete_multiple_nodes":
       return await deleteMultipleNodes(params);
     case "get_styles":
@@ -1085,6 +1087,26 @@ async function deleteNode(params) {
 
   node.remove();
 
+  return nodeInfo;
+}
+
+async function hideNode(params) {
+  const { nodeId } = params || {};
+
+  if (!nodeId) {
+    throw new Error("Missing nodeId parameter");
+  }
+
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) {
+    throw new Error(`Node not found with ID: ${nodeId}`);
+  }
+  node.visible = false;
+  const nodeInfo = {
+    id: node.id,
+    name: node.name,
+    type: node.type,
+  };
   return nodeInfo;
 }
 

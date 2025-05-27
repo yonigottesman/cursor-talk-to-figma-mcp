@@ -213,6 +213,39 @@ server.tool(
   }
 );
 
+// Node Info Tool
+server.tool(
+  "hide_node",
+  "Hide a specific node in Figma",
+  {
+    nodeId: z.string().describe("The ID of the node to hide"),
+  },
+  async ({ nodeId }) => {
+    try {
+      const result = await sendCommandToFigma("hide_node", { nodeId });
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Node hidden: ${JSON.stringify(result)}`
+          }
+        ]
+      };
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Error getting node info: ${error instanceof Error ? error.message : String(error)
+              }`,
+          },
+        ],
+      };
+    }
+  }
+);
+
+
 function rgbaToHex(color: any): string {
   // skip if color is already hex
   if (color.startsWith('#')) {
@@ -2558,6 +2591,7 @@ type FigmaCommand =
   | "move_node"
   | "resize_node"
   | "delete_node"
+  | "hide_node"
   | "delete_multiple_nodes"
   | "get_styles"
   | "get_local_components"
@@ -2644,6 +2678,9 @@ type CommandParams = {
     height: number;
   };
   delete_node: {
+    nodeId: string;
+  };
+  hide_node: {
     nodeId: string;
   };
   delete_multiple_nodes: {
